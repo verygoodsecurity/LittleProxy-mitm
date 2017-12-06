@@ -226,8 +226,13 @@ public final class CertificateHelper {
         name.addRDN(BCStyle.OU, authority.certOrganizationalUnitName());
         X500Name subject = name.build();
 
+        // originally the date was plus one day but in some cases (to be investigated)
+        // it caused expired certificate errors (probably a connection was held for more than 1 day)
+        // so the quick fix was to shift the date to plus one month
+        final Date certExpirationDate = new Date(System.currentTimeMillis() + ONE_DAY * 30);
+
         X509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(issuer, serial, NOT_BEFORE,
-                new Date(System.currentTimeMillis() + ONE_DAY), subject, keyPair.getPublic());
+            certExpirationDate, subject, keyPair.getPublic());
 
         builder.addExtension(Extension.subjectKeyIdentifier, false,
                 createSubjectKeyIdentifier(keyPair.getPublic()));
