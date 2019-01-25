@@ -312,7 +312,7 @@ This is an extension module to enable Man-In-The-Middle impersonation for HTTPS.
             <extension>
                 <groupId>io.vgs.tools</groupId>
                 <artifactId>aws-maven</artifactId>
-                <version>1.4.2</version>
+                <version>1.4.3</version>
             </extension>
 
         </extensions>
