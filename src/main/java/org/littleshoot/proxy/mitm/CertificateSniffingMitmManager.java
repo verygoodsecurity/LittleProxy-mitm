@@ -29,7 +29,7 @@ public class CertificateSniffingMitmManager implements MitmManager {
     }
 
     public CertificateSniffingMitmManager(Authority authority) throws Exception {
-        this(new BouncyCastleSslEngineSource(authority, true, true));
+        this(new BouncyCastleSslEngineSource(authority, true, true, CertificateSettings.builder().build()));
     }
 
     public CertificateSniffingMitmManager(BouncyCastleSslEngineSource sslEngineSource) throws RootCertificateException {
