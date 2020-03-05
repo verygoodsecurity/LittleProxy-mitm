@@ -1,5 +1,7 @@
 package org.littleshoot.proxy.mitm;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Verify;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -79,10 +81,6 @@ public final class CertificateHelper {
      */
     private static final String SIGNATURE_ALGORITHM = (is32BitJvm() ? "SHA256" : "SHA512") + "WithRSAEncryption";
 
-    private static final int ROOT_KEYSIZE = 2048;
-
-    private static final int FAKE_KEYSIZE = 1024;
-
     /** The milliseconds of a day */
     private static final long ONE_DAY = 86400000L;
 
@@ -147,11 +145,11 @@ public final class CertificateHelper {
     }
 
     public static KeyStore createRootCertificate(Authority authority,
-            String keyStoreType) throws NoSuchAlgorithmException,
+            String keyStoreType, int keySize) throws NoSuchAlgorithmException,
             NoSuchProviderException, IOException,
             OperatorCreationException, CertificateException, KeyStoreException {
 
-        KeyPair keyPair = generateKeyPair(ROOT_KEYSIZE);
+        KeyPair keyPair = generateKeyPair(keySize);
 
         X500NameBuilder nameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         nameBuilder.addRDN(BCStyle.CN, authority.commonName());
@@ -209,12 +207,11 @@ public final class CertificateHelper {
 
     public static KeyStore createServerCertificate(String commonName,
             SubjectAlternativeNameHolder subjectAlternativeNames,
-            Authority authority, Certificate caCert, PrivateKey caPrivKey)
+            Authority authority, Certificate caCert, PrivateKey caPrivKey, int keySize)
             throws NoSuchAlgorithmException, NoSuchProviderException,
             IOException, OperatorCreationException, CertificateException,
             InvalidKeyException, SignatureException, KeyStoreException {
-
-        KeyPair keyPair = generateKeyPair(FAKE_KEYSIZE);
+        KeyPair keyPair = generateKeyPair(keySize);
 
         X500Name issuer = new X509CertificateHolder(caCert.getEncoded())
                 .getSubject();

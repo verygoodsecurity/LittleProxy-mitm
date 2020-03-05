@@ -79,6 +79,8 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
 
     private Cache<String, SSLContext> serverSSLContexts;
 
+    private CertificateSettings certificateSettings;
+
     /**
      * Creates a SSL engine source create a Certificate Authority if needed and
      * initializes a SSL context. Exceptions will be thrown to let the manager
@@ -98,9 +100,12 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
      *            Generation takes between 50 to 500ms, but only once per
      *            thread, since there is a connection cache too. It's save to
      *            give a null cache to prevent memory or locking issues.
+     * @param certificateSettings
+     *            parameters for generating x509 certificates
      */
     public BouncyCastleSslEngineSource(Authority authority,
             boolean trustAllServers, boolean sendCerts,
+            CertificateSettings certificateSettings,
             Cache<String, SSLContext> sslContexts)
             throws GeneralSecurityException, OperatorCreationException,
             RootCertificateException, IOException {
@@ -108,6 +113,7 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
         this.trustAllServers = trustAllServers;
         this.sendCerts = sendCerts;
         this.serverSSLContexts = sslContexts;
+        this.certificateSettings = certificateSettings;
 
         init();
     }
@@ -135,13 +141,14 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
      * @param trustAllServers
      * 
      * @param sendCerts
+     * @param certificateSettings
+     *            parameters for generating x509 certificates
      */
     public BouncyCastleSslEngineSource(Authority authority,
-            boolean trustAllServers, boolean sendCerts)
+            boolean trustAllServers, boolean sendCerts, CertificateSettings certificateSettings)
             throws RootCertificateException, GeneralSecurityException,
             IOException, OperatorCreationException {
-        this(authority, trustAllServers, sendCerts,
-                initDefaultCertificateCache());
+        this(authority, trustAllServers, sendCerts, certificateSettings, initDefaultCertificateCache());
     }
 
     private static Cache<String, SSLContext> initDefaultCertificateCache() {
@@ -231,7 +238,7 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
         }
         MillisecondsDuration duration = new MillisecondsDuration();
         KeyStore keystore = CertificateHelper.createRootCertificate(authority,
-                KEY_STORE_TYPE);
+                KEY_STORE_TYPE, certificateSettings.getDefaultRootKeySize());
         LOG.info("Created root certificate authority key store in {}ms",
                 duration);
 
@@ -352,7 +359,7 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
         MillisecondsDuration duration = new MillisecondsDuration();
 
         KeyStore ks = CertificateHelper.createServerCertificate(commonName,
-                subjectAlternativeNames, authority, caCert, caPrivKey);
+                subjectAlternativeNames, authority, caCert, caPrivKey, certificateSettings.getDefaultFakeKeySize());
         KeyManager[] keyManagers = CertificateHelper.getKeyManagers(ks,
                 authority);
 
@@ -368,7 +375,7 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
             IOException {
 
         KeyStore ks = CertificateHelper.createServerCertificate(commonName,
-                subjectAlternativeNames, authority, caCert, caPrivKey);
+                subjectAlternativeNames, authority, caCert, caPrivKey, certificateSettings.getDefaultFakeKeySize());
 
         PrivateKey key = (PrivateKey) ks.getKey(authority.alias(),
                 authority.password());
