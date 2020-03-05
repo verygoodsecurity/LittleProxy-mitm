@@ -359,7 +359,7 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
         MillisecondsDuration duration = new MillisecondsDuration();
 
         KeyStore ks = CertificateHelper.createServerCertificate(commonName,
-                subjectAlternativeNames, authority, caCert, caPrivKey, certificateSettings.getDefaultFakeKeySize());
+                subjectAlternativeNames, authority, caCert, caPrivKey, certificateSettings.getFakeKeySize());
         KeyManager[] keyManagers = CertificateHelper.getKeyManagers(ks,
                 authority);
 
@@ -375,7 +375,7 @@ public class BouncyCastleSslEngineSource implements SslEngineSource {
             IOException {
 
         KeyStore ks = CertificateHelper.createServerCertificate(commonName,
-                subjectAlternativeNames, authority, caCert, caPrivKey, certificateSettings.getDefaultFakeKeySize());
+                subjectAlternativeNames, authority, caCert, caPrivKey, certificateSettings.getFakeKeySize());
 
         PrivateKey key = (PrivateKey) ks.getKey(authority.alias(),
                 authority.password());

@@ -10,19 +10,26 @@ public class CertificateSettings {
   public static final int MAX_KEY_SIZE = 8192;
 
   private final int defaultRootKeySize;
-  private final int defaultFakeKeySize;
+  private final int fakeKeySize;
 
-  private CertificateSettings(int defaultRootKeySize, int defaultFakeKeySize) {
+  /**
+   * @param defaultRootKeySize
+   *        RSA key size used to generate fallback root certificate.
+   *        If there's a root authority file found on system this parameter is ignored.
+   * @param fakeKeySize
+   *        RSA key size for 'fake' x509 used to impersonate upstreams.
+   */
+  private CertificateSettings(int defaultRootKeySize, int fakeKeySize) {
     this.defaultRootKeySize = defaultRootKeySize;
-    this.defaultFakeKeySize = defaultFakeKeySize;
+    this.fakeKeySize = fakeKeySize;
   }
 
   public int getDefaultRootKeySize() {
     return defaultRootKeySize;
   }
 
-  public int getDefaultFakeKeySize() {
-    return defaultFakeKeySize;
+  public int getFakeKeySize() {
+    return fakeKeySize;
   }
 
   public static CertificateSettingsBuilder builder() {
