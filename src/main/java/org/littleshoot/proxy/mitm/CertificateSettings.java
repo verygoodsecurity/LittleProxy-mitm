@@ -38,7 +38,7 @@ public class CertificateSettings {
 
   public static class CertificateSettingsBuilder {
     private int defaultRootKeySize = DEFAULT_ROOT_KEY_SIZE;
-    private int defaultFakeKeySize = DEFAULT_FAKE_KEY_SIZE;
+    private int fakeKeySize = DEFAULT_FAKE_KEY_SIZE;
 
     public CertificateSettingsBuilder setDefaultRootKeySize(int defaultRootKeySize) {
       checkKeySize(defaultRootKeySize);
@@ -46,14 +46,14 @@ public class CertificateSettings {
       return this;
     }
 
-    public CertificateSettingsBuilder setDefaultFakeKeySize(int defaultFakeKeySize) {
+    public CertificateSettingsBuilder setFakeKeySize(int defaultFakeKeySize) {
       checkKeySize(defaultFakeKeySize);
-      this.defaultFakeKeySize = defaultFakeKeySize;
+      this.fakeKeySize = defaultFakeKeySize;
       return this;
     }
 
     public CertificateSettings build() {
-      return new CertificateSettings(defaultRootKeySize, defaultFakeKeySize);
+      return new CertificateSettings(defaultRootKeySize, fakeKeySize);
     }
 
     private static void checkKeySize(int keySize) {
